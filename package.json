@@ -1,6 +1,6 @@
 {
   "name": "pick-option",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "pick-option is a module that was created to add style select and make the select serachable without jquery",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
