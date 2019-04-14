@@ -497,11 +497,13 @@ interface IConfig {
   parentWidthActive?: boolean;
   parentWidth?: string;
 }
+/**
+ * interface IElement extends Element {
+ *     mozMatchesSelector(selectors: string): boolean;
+ *     msMatchesSelector(selectors: string): boolean;
+ * }
+ */
 
-// interface IElement extends Element {
-//     mozMatchesSelector(selectors: string): boolean;
-//     msMatchesSelector(selectors: string): boolean;
-// }
 
 // declare let SCElement: {
 //     prototype: IElement;
