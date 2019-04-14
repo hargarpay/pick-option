@@ -26,7 +26,7 @@ link the css and js files in your project
 * Add `pick-option` class to the select element
 * Instantiate the object **Setect**
 ```javascript
-new SelectJs({
+new PickOption({
     placeholder: "Select Item",
     parentWidthActive: true,
     parentWidth: '100%'
