@@ -9,7 +9,6 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*ts\" \"src/**/*js\"",
     "lint": "tslint -p tsconfig.json",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "webpack": "webpack --config webpack.config.js",
     "prepare": "npm run webpack",
     "prepublishOnly": "npm test && npm run lint",
