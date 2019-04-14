@@ -56,7 +56,7 @@ For the select element set the placeholder attribute
 ```
 | Data Type    | Instance     |  Individual  |
 | ------------ |:------------:| ------------:|
-| Data Type  | string       | string       |
+| Data Type    | string       | string       |
 
 ### Parent Width Activate
 It is use to allow the select element with pick-option class to modify it direct parent width. It is needs to be set to true before `parentWidth` parameter can work
