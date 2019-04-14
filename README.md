@@ -37,7 +37,7 @@ new SelectJs({
 Parameters defined at the instance of the module are applied to all the select elements with pick-option class and each of the select element with pick-option class can have its own configuration parameter which override it default configuration parameter. Note that only fields provided will be override.
 
 #### Placeholder
-As its name, it will be place to holder the default option.
+As it name implies, it displays the default option.
 **Default Value is 'Select item'**
 For the instance of PickOption
 ```javascript
