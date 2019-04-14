@@ -33,7 +33,7 @@
     "typescript"
   ],
   "author": "Sagecoder",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/hargarpay/pick-option/issues"
   },
