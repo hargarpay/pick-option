@@ -1,0 +1,7 @@
+node_modules
+/lib
+src/lib
+.vscode
+jest.config.js
+*.php
+*-lock.json

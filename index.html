@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/dist/main.min.css">
+    </head>
+<body>
+    <div class="select-sagecoder">
+        <select
+            name="first"
+            class="pick-option"
+            placeholder="Select Fruits"
+            data-parent-width-active="false"
+            id="pick-option-1"
+        >
+            <option>Apple</option>
+            <option >Banana</option>
+            <option>Pineapple</option>
+            <option>Orange</option>
+            <option selected="selected">Cucumber</option>
+            <option>Carrot</option>
+        </select>
+    </div>
+    <div class="select-sagecoder">
+        <select
+            name="second[]"
+            class="pick-option"
+            data-parent-width-active="false"
+            id="pick-option-2"
+            multiple
+        >
+            <option>Pineapple</option>
+            <option>Orange</option>
+            <option>Cucumber</option>
+            <option selected="selected">Carrot</option>
+            <option selected="selected">Mango</option>
+            <option>Grape</option>
+            <option>Water melon</option>
+        </select>
+    </div>
+    <script src="./dist/main.min.js"></script>
+    <script>
+        new PickOption({
+            placeholder: "Select Item",
+            parentWidthActive: true
+        });
+        document.getElementById('pick-option-1').addEventListener('change', function(e){
+            console.log('Another Option Select 1 has been select', e)
+        });
+        document.getElementById('pick-option-2').addEventListener('change', function(e){
+            console.log('Another Option Select 2 has been select', e)
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+    "transform": {
+        "^.+\\.(t|j)sx?$": "ts-jest"
+    },
+    "testMatch": ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
+    "testPathIgnorePatterns": [
+          "/node_modules/"
+        ],
+    "moduleNameMapper": {
+        "\\.(css|sass|scss|less)$": "identity-obj-proxy"
+        },
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx", "json", "node"]
+}
