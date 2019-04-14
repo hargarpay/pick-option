@@ -16,9 +16,7 @@ export default class PickOption {
    */
   public createCustomMenu() {
     // Get all select element with pick-option class
-    const selectMenuDisplay = Array.from(
-      document.querySelectorAll('select.pick-option'),
-    ) as HTMLSelectElement[];
+    const selectMenuDisplay = Array.from(document.querySelectorAll('select.pick-option')) as HTMLSelectElement[];
     if (selectMenuDisplay) {
       // Close all custom dropdown when click outside;
       (document as Document).addEventListener('click', e => {
@@ -51,21 +49,20 @@ export default class PickOption {
          * which is an invalid variable
          */
         let selectID = menu.getAttribute('id') || ''; // Check if the select element has id attribute
-        if(this.arraySelectIDs.indexOf(selectID) === -1){
-          if(selectID === '') {
-            selectID =`a${Math.random()
-                .toString(36)
-                .substring(7)}`;
-          }else{
-            selectID = menu.getAttribute('id') as string;   
+        if (this.arraySelectIDs.indexOf(selectID) === -1) {
+          if (selectID === '') {
+            selectID = `a${Math.random()
+              .toString(36)
+              .substring(7)}`;
+          } else {
+            selectID = menu.getAttribute('id') as string;
           }
-        }else{
-          selectID =`a${Math.random()
+        } else {
+          selectID = `a${Math.random()
             .toString(36)
             .substring(7)}`;
-          }
-          this.arraySelectIDs.push(selectID);
-
+        }
+        this.arraySelectIDs.push(selectID);
 
         // Generate the custom select
         this.generateCustomMenu(menu, menuOptions, selectID, '', true);
@@ -363,8 +360,7 @@ export default class PickOption {
           this.classList.add('active');
           // Close other custom select dropdown
           document.querySelectorAll(`.select-menu:not(#${selectID})`).forEach(item => {
-
-            item.classList.remove('active')
+            item.classList.remove('active');
           });
         }
       });
@@ -503,7 +499,6 @@ interface IConfig {
  *     msMatchesSelector(selectors: string): boolean;
  * }
  */
-
 
 // declare let SCElement: {
 //     prototype: IElement;
