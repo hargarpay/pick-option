@@ -1,6 +1,7 @@
 node_modules
 /lib
 src/lib
+src/js
 .vscode
 jest.config.js
 *.php

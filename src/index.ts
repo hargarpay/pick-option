@@ -142,15 +142,10 @@ export default class PickOption {
         menu.value = '';
       }
       /**
-       * if the select element has multiple attribute
-       * add multiple class else do not add multiple class
+       * if the select element has multiple attribute add multiple class else do not add multiple class
        */
       const mulitpleClass = this.checkMultipleAttr(menu) ? ' multiple' : '';
-
-      menu.insertAdjacentHTML(
-        'beforebegin',
-        `
-                <div class="select-menu${mulitpleClass}" id="${selectID}">
+      menu.insertAdjacentHTML('beforebegin',`<div class="select-menu${mulitpleClass}" id="${selectID}">
                         <div class="select-item no-select">${placeholder}</div>
                         <div class="select-item-options">
                             <div class="select-item">
@@ -160,11 +155,8 @@ export default class PickOption {
                                 ${customMenuOptions}
                             </div>
                         </div>
-                </div>
-            `,
-      );
+                </div>`);
       this.setParentWidthIfActive(menu);
-      
   }
 
   private getSelectOption(menu: HTMLSelectElement): HTMLOptionElement | HTMLOptionElement[] | null {
