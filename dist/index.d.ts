@@ -10,7 +10,21 @@ export default class PickOption {
      */
     createCustomMenu(): void;
     testGenerateCustomMenuItems(option: HTMLOptionElement): string;
+    private callCreatemenu;
+    private getIds;
+    private eventOnDocumentElmOnly;
+    private generateID;
     private generateCustomMenu;
+    private prepareOptions;
+    private intanceCallMenthod;
+    private getSelectOption;
+    private getPlaceholder;
+    private getInnerPlaceholder;
+    private getElsePlaceholder;
+    private getOptionString;
+    private setParentWidthIfActive;
+    private setParentWidth;
+    private getMenuItems;
     private generateCustomMenuItems;
     /**
      * @name checkMultipleAttr
@@ -31,6 +45,8 @@ export default class PickOption {
      * if the select does not have multiple attribute the value will be a `string`
      */
     private getSelectedOptions;
+    private getIfSelectedOptions;
+    private getElseSelectedOption;
     /**
      * @name getFilterConditions
      * @param selectedOptions
@@ -54,6 +70,10 @@ export default class PickOption {
      * Add click event to each of the items
      */
     private addScrollbar;
+    private selectElementEventListener;
+    private addClickEventToCloseButton;
+    private setPlaceholderWhenEmpty;
+    private addRemoveActiveClass;
     /**
      * @name eventListenerHandler
      * @param e

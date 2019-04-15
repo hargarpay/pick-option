@@ -18,61 +18,80 @@ export default class PickOption {
     // Get all select element with pick-option class
     const selectMenuDisplay = Array.from(document.querySelectorAll('select.pick-option')) as HTMLSelectElement[];
     if (selectMenuDisplay) {
-      // Close all custom dropdown when click outside;
-      (document as Document).addEventListener('click', e => {
-        /**
-         * Check if select-menu and select-item are closest
-         * to the event target else closes all drop down
-         */
-        if (
-          (e.target as HTMLElement).closest(`.select-menu`) === null &&
-          (e.target as HTMLElement).closest(`.select-item`) === null
-        ) {
-          // Hide the menus.
-          document.querySelectorAll('.select-menu.active').forEach(item => {
-            item.classList.remove('active');
-          });
-        }
-      });
-      // Use for...of loop to run through each of the element
-      for (const menu of selectMenuDisplay) {
-        // Get all option elements of the current select element
-        const menuOptions = Array.from(menu.querySelectorAll('option')) as HTMLOptionElement[];
-        /**
-         * Check if the current select element has id
-         * if it has id get the id
-         * if it does not have generate a unique id
-         * if two select element has the same id
-         * generate a new id for the second element
-         * and append character a to the generate id
-         * because some generate id might start with number
-         * which is an invalid variable
-         */
-        let selectID = menu.getAttribute('id') || ''; // Check if the select element has id attribute
-        if (this.arraySelectIDs.indexOf(selectID) === -1) {
-          if (selectID === '') {
-            selectID = `a${Math.random()
-              .toString(36)
-              .substring(7)}`;
-          } else {
-            selectID = menu.getAttribute('id') as string;
-          }
-        } else {
-          selectID = `a${Math.random()
-            .toString(36)
-            .substring(7)}`;
-        }
-        this.arraySelectIDs.push(selectID);
-
-        // Generate the custom select
-        this.generateCustomMenu(menu, menuOptions, selectID, '', true);
-      }
+      this.callCreatemenu(selectMenuDisplay);
     }
   }
 
   // Test function for menu list generator
   public testGenerateCustomMenuItems(option: HTMLOptionElement): string {
     return this.generateCustomMenuItems(option);
+  }
+
+  private callCreatemenu(selectMenuDisplay: HTMLSelectElement[]){
+    // Close all custom dropdown when click outside;
+    (document as Document).addEventListener('click', e => {
+      /**
+       * Check if select-menu and select-item are closest
+       * to the event target else closes all drop down
+       */
+      // if (
+      //   (e.target as HTMLElement).closest(`.select-menu`) === null &&
+      //   (e.target as HTMLElement).closest(`.select-item`) === null
+      // ) {
+      //   // Hide the menus.
+      //   document.querySelectorAll('.select-menu.active').forEach(item => {
+      //     item.classList.remove('active');
+      //   });
+      // }
+      this.eventOnDocumentElmOnly(e);
+    });
+    // Use for...of loop to run through each of the element
+    for (const menu of selectMenuDisplay) {
+      // Get all option elements of the current select element
+      const menuOptions = Array.from(menu.querySelectorAll('option')) as HTMLOptionElement[];
+      /**
+       * Check if the current select element has id
+       * if it has id get the id
+       * if it does not have generate a unique id
+       * if two select element has the same id
+       * generate a new id for the second element
+       * and append character a to the generate id
+       * because some generate id might start with number
+       * which is an invalid variable
+       */
+      let selectID = menu.getAttribute('id') || ''; // Check if the select element has id attribute
+      selectID = this.getIds(selectID);
+      this.arraySelectIDs.push(selectID);
+
+      // Generate the custom select
+      this.generateCustomMenu(menu, menuOptions, selectID, '', true);
+    }
+  }
+
+  private getIds(id: string): string{
+    let selectID: string = id;
+    if (this.arraySelectIDs.indexOf(selectID) === -1) {
+      selectID = selectID === "" ? this.generateID() : selectID;
+    } else {
+      selectID = this.generateID()
+    }
+    return selectID;
+  }
+
+  private eventOnDocumentElmOnly(e: Event){
+    if (
+      (e.target as HTMLElement).closest(`.select-menu`) === null &&
+      (e.target as HTMLElement).closest(`.select-item`) === null
+    ) {
+      // Hide the menus.
+      document.querySelectorAll('.select-menu.active').forEach(item => {
+        item.classList.remove('active');
+      });
+    }
+  }
+
+  private generateID(): string{
+    return `a${Math.random().toString(36).substring(7)}`;
   }
 
   // Create the custom menu and display it
@@ -84,58 +103,88 @@ export default class PickOption {
     onload = false,
   ): Promise<void> {
     // Generate the custom options using Promise
-    const promise = new Promise((resolve, reject) => {
+    // const promise = new Promise((resolve, reject) => {
+    //   let optionsList = '';
+    //   let numberOfLength: number;
+    //   const currentSelectValue: string | string[] = this.getSelectedOptions(menu);
+
+    //   const newOptions = options.filter((option: HTMLOptionElement) =>
+    //     this.getFilterConditions(currentSelectValue, option, value),
+    //   );
+
+    //   numberOfLength = newOptions.length - 1;
+    //   if (newOptions.length > 0) {
+    //     newOptions.forEach((option, index) => {
+    //       optionsList += this.generateCustomMenuItems(option);
+    //       if (numberOfLength === index) {
+    //         resolve(optionsList);
+    //       }
+    //     });
+    //   } else {
+    //     resolve(optionsList);
+    //   }
+    // });
+
+    const customMenuOptions = await this.prepareOptions(menu, options, value);
+    const currentCustomSelect = (document as Document).querySelector(`div#${selectID} .select-item-options .wrapper`);
+    if (currentCustomSelect) {
+      (currentCustomSelect.parentNode as HTMLElement).removeChild(currentCustomSelect);
+    }
+
+    if (onload) {
+      this.intanceCallMenthod(menu, selectID, customMenuOptions);
+    } else {
+      const selectItemOptions = (document as Document).querySelector(
+        `div#${selectID} .select-item-options`,
+      ) as HTMLElement;
+      selectItemOptions.insertAdjacentHTML(
+        'beforeend',
+        `
+            <div class="wrapper">${customMenuOptions}</div>
+        `,
+      );
+    }
+
+    this.addScrollbar(selectID, onload);
+    if (onload) {
+      this.addSearchableEvent(selectID);
+    }
+  }
+
+  private prepareOptions(menu: HTMLSelectElement, options: HTMLOptionElement[],value: string = ''): Promise<string>{
+    return new Promise((resolve, reject) => {
       let optionsList = '';
-      let numberOfLength: number;
+      // let numberOfLength: number;
       const currentSelectValue: string | string[] = this.getSelectedOptions(menu);
 
       const newOptions = options.filter((option: HTMLOptionElement) =>
         this.getFilterConditions(currentSelectValue, option, value),
       );
 
-      numberOfLength = newOptions.length - 1;
+      // numberOfLength = newOptions.length - 1;
       if (newOptions.length > 0) {
-        newOptions.forEach((option, index) => {
-          optionsList += this.generateCustomMenuItems(option);
-          if (numberOfLength === index) {
-            resolve(optionsList);
-          }
-        });
-      } else {
-        resolve(optionsList);
+        // newOptions.forEach((option, index) => {
+        //   optionsList += this.generateCustomMenuItems(option);
+        //   if (numberOfLength === index) {
+        //     resolve(optionsList);
+        //   }
+        // });
+        optionsList = this.getMenuItems(newOptions);
+        return resolve(optionsList)
       }
+      
+      return resolve(optionsList);
     });
+  }
 
-    const customMenuOptions = await promise;
-    const currentCustomSelect = (document as Document).querySelector(`div#${selectID} .select-item-options .wrapper`);
-    if (currentCustomSelect) {
-      (currentCustomSelect.parentNode as HTMLElement).removeChild(currentCustomSelect);
-    }
-    if (onload) {
-      const selectPlaceholder = menu.getAttribute('placeholder');
-      const selectedOption = this.checkMultipleAttr(menu)
-        ? (Array.from(menu.querySelectorAll('option[selected]')) as HTMLOptionElement[] | null)
-        : (menu.querySelector('option[selected]') as HTMLOptionElement | null);
+  private intanceCallMenthod(menu: HTMLSelectElement, selectID: string, customMenuOptions: string){
+    const selectPlaceholder = menu.getAttribute('placeholder');
+      const selectedOption = this.getSelectOption(menu);
       let placeholder: string;
       if (selectedOption !== null) {
-        if (Array.isArray(selectedOption)) {
-          if (selectedOption.length > 0) {
-            let optionString = '';
-            selectedOption.forEach(option => {
-              optionString += `<span class="selected" data-label="${option.textContent}">${
-                option.textContent
-              } <span class="close">x</span></span>`;
-            });
-            placeholder = optionString;
-          } else {
-            placeholder = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
-            menu.value = '';
-          }
-        } else {
-          placeholder = selectedOption.textContent as string;
-        }
+        placeholder = this.getPlaceholder(menu, selectedOption, selectPlaceholder);
       } else {
-        placeholder = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
+        placeholder = this.getElsePlaceholder(selectPlaceholder);
         menu.value = '';
       }
       /**
@@ -160,35 +209,88 @@ export default class PickOption {
                 </div>
             `,
       );
+      this.setParentWidthIfActive(menu);
+      
+  }
 
-      const parentElement = menu.parentElement as HTMLElement | null;
+  private getSelectOption(menu: HTMLSelectElement): HTMLOptionElement | HTMLOptionElement[] | null {
+    return this.checkMultipleAttr(menu)
+    ? (Array.from(menu.querySelectorAll('option[selected]')) as HTMLOptionElement[] | null)
+    : (menu.querySelector('option[selected]') as HTMLOptionElement | null);
+  }
+
+  private getPlaceholder(menu: HTMLSelectElement, selectedOption: HTMLOptionElement|HTMLOptionElement[], selectPlaceholder: string|null)
+  :string
+  {
+    let placeholder: string;
+    if (Array.isArray(selectedOption)) {
+      placeholder = this.getInnerPlaceholder(menu, selectedOption, selectPlaceholder);
+    } else {
+      placeholder = selectedOption.textContent as string;
+    }
+    return placeholder;
+  }
+
+  private getInnerPlaceholder(menu: HTMLSelectElement, selectedOption: HTMLOptionElement[], selectPlaceholder: string|null)
+  :string
+  {
+    let placeholder: string;
+    if (selectedOption.length > 0) {
+      // let optionString = '';
+      // selectedOption.forEach(option => {
+      //   optionString += `<span class="selected" data-label="${option.textContent}">${
+      //     option.textContent
+      //   } <span class="close">x</span></span>`;
+      // });
+      placeholder = this.getOptionString(selectedOption);
+    } else {
+      placeholder = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
+      menu.value = '';
+    }
+    return placeholder;
+  }
+
+  private getElsePlaceholder(selectPlaceholder: string | null): string{
+    return selectPlaceholder === null ? this.placeholder : selectPlaceholder;
+  }
+
+  private getOptionString(selectedOption: HTMLOptionElement[]): string{
+    let optionString = '';
+    selectedOption.forEach(option => {
+      optionString += `<span class="selected" data-label="${option.textContent}">${
+        option.textContent
+      } <span class="close">x</span></span>`;
+    });
+     return optionString;
+  }
+
+  private setParentWidthIfActive(menu: HTMLSelectElement){
+    const parentElement = menu.parentElement as HTMLElement | null;
 
       const parentWidthActive = menu.getAttribute('data-parent-width-active');
       const parentWidth = menu.getAttribute('data-parent-width');
 
       const pwactive = parentWidthActive === null ? this.parentWidthActive : parentWidthActive === 'true';
-      const pw = parentWidth === null ? this.parentWidth : parentWidth;
+      const assignWidth = parentWidth === null ? this.parentWidth : parentWidth;
       if (pwactive) {
-        if (parentElement instanceof HTMLElement) {
-          parentElement.style.width = pw;
-        }
+        this.setParentWidth(parentElement, assignWidth);
       }
-    } else {
-      const selectItemOptions = (document as Document).querySelector(
-        `div#${selectID} .select-item-options`,
-      ) as HTMLElement;
-      selectItemOptions.insertAdjacentHTML(
-        'beforeend',
-        `
-            <div class="wrapper">${customMenuOptions}</div>
-        `,
-      );
-    }
+  }
 
-    this.addScrollbar(selectID, onload);
-    if (onload) {
-      this.addSearchableEvent(selectID);
+  private setParentWidth(parentElement: HTMLElement|null, assignWidth: string){
+    if (parentElement instanceof HTMLElement) {
+      parentElement.style.width = assignWidth;
     }
+  }
+
+
+
+  private getMenuItems(newOptions: HTMLOptionElement[]): string{
+    let optionsList = '';
+    newOptions.forEach((option) => {
+      optionsList += this.generateCustomMenuItems(option);
+    });
+    return optionsList;
   }
 
   private generateCustomMenuItems(option: HTMLOptionElement): string {
@@ -224,20 +326,20 @@ export default class PickOption {
     let currentSelectValue: string | string[];
     if (this.checkMultipleAttr(menu)) {
       const selectedOptions = Array.from(menu.querySelectorAll('option[selected]')) as HTMLOptionElement[];
-      if (selectedOptions.length > 0) {
-        currentSelectValue = selectedOptions.map(opt => opt.value) as string[];
-      } else {
-        currentSelectValue = [];
-      }
+      currentSelectValue = this.getIfSelectedOptions(selectedOptions);
     } else {
       const selectedOption = menu.querySelector('option[selected]') as HTMLOptionElement | null;
-      if (selectedOption !== null) {
-        currentSelectValue = selectedOption.value as string;
-      } else {
-        currentSelectValue = '';
-      }
+      currentSelectValue = this.getElseSelectedOption(selectedOption);
     }
     return currentSelectValue;
+  }
+
+  private getIfSelectedOptions(selectedOptions: HTMLOptionElement[]): string[]{
+    return  selectedOptions.length > 0 ? selectedOptions.map(opt => opt.value) as string[] : [];
+  }
+
+  private getElseSelectedOption(selectedOption: HTMLOptionElement | null): string{
+    return selectedOption !== null ? selectedOption.value as string: '';
   }
 
   /**
@@ -294,7 +396,12 @@ export default class PickOption {
     }
 
     if (onload) {
-      // initial call
+      this.selectElementEventListener(selectID);
+    }
+  }
+
+  private selectElementEventListener(selectID: string){
+    // initial call
       // Add click event to the current select element
       const $this = this;
       (document.querySelector(`#${selectID}`) as HTMLElement).addEventListener('click', function(e) {
@@ -310,83 +417,72 @@ export default class PickOption {
          * from other select elements that has active class
          */
         if (this.classList.contains('multiple')) {
-          // tslint:disable-next-line:no-console
-          if (customSelect.nodeName.toLowerCase() === 'span' && customSelect.classList.contains('close')) {
-            const selectOptions = Array.from(
-              (this.nextElementSibling as HTMLSelectElement).querySelectorAll('option[selected]'),
-            );
-            selectOptions
-              .filter(
-                option =>
-                  option.textContent === (customSelect.parentElement as HTMLSpanElement).getAttribute('data-label'),
-              )
-              .forEach(option => {
-                option.removeAttribute('selected');
-                (customSelect.parentElement as HTMLSpanElement).remove();
-                const searchInput = (document as Document).querySelector(
-                  `#${selectID} .select-item-options input`,
-                ) as HTMLInputElement;
-                $this.rerenderMenuList(selectID, (searchInput.value as string).trim());
-                this.classList.add('active');
-              });
-            /**
-             * If the select remain one
-             * replace it with the placeholder
-             * because the remaining element would have been
-             * remove before the script will run
-             */
-            if (selectOptions.length === 1) {
-              const selectPlaceholder = this.getAttribute('placeholder');
-              this.children[0].textContent = selectPlaceholder === null ? $this.placeholder : selectPlaceholder;
-            }
-          }
+          $this.addClickEventToCloseButton(this, customSelect, selectID);
         }
 
         if (customSelect.classList.contains('select-item') && customSelect.closest('.wrapper') !== null) {
           $this.eventListenerHandler(e as Event, selectID);
         }
+  
+        $this.addRemoveActiveClass(this, selectID);
+       
+      });
+  }
 
-        if (this.classList.contains('active')) {
-          /**
-           * if the select elment contain multiple class
-           * check if the event target is within the
-           * select element that if the user is still selecting
-           * more options if not close the dropdown
-           */
-          if (!this.classList.contains('multiple')) {
-            this.classList.remove('active');
-          }
-        } else {
-          this.classList.add('active');
-          // Close other custom select dropdown
-          document.querySelectorAll(`.select-menu:not(#${selectID})`).forEach(item => {
-            item.classList.remove('active');
-          });
-        }
+  private addClickEventToCloseButton(selectElement: HTMLElement, customSelect: HTMLElement, selectID: string){
+    if (customSelect.nodeName.toLowerCase() === 'span' && customSelect.classList.contains('close')) {
+      const selectOptions = Array.from(
+        (selectElement.nextElementSibling as HTMLSelectElement).querySelectorAll('option[selected]'),
+      );
+      selectOptions
+        .filter(
+          option =>
+            option.textContent === (customSelect.parentElement as HTMLSpanElement).getAttribute('data-label'),
+        )
+        .forEach(option => {
+          option.removeAttribute('selected');
+          (customSelect.parentElement as HTMLSpanElement).remove();
+          const searchInput = (document as Document).querySelector(
+            `#${selectID} .select-item-options input`,
+          ) as HTMLInputElement;
+          this.rerenderMenuList(selectID, (searchInput.value as string).trim());
+          selectElement.classList.add('active');
+        });
+      /**
+       * If the select remain one
+       * replace it with the placeholder
+       * because the remaining element would have been
+       * remove before the script will run
+       */
+      this.setPlaceholderWhenEmpty(selectElement, selectOptions);
+    }
+  }
+
+  private setPlaceholderWhenEmpty(selectElement: HTMLElement, selectOptions: Element[]){
+    if (selectOptions.length === 1) {
+      const selectPlaceholder = selectElement.getAttribute('placeholder');
+      selectElement.children[0].textContent = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
+    }
+  }
+
+  private addRemoveActiveClass(customSelect: HTMLElement, selectID: string){
+    if (customSelect.classList.contains('active')) {
+      /**
+       * if the select elment contain multiple class
+       * check if the event target is within the
+       * select element that if the user is still selecting
+       * more options if not close the dropdown
+       */
+      if (!customSelect.classList.contains('multiple')) {
+        customSelect.classList.remove('active');
+      }
+    } else {
+      customSelect.classList.add('active');
+      // Close other custom select dropdown
+      document.querySelectorAll(`.select-menu:not(#${selectID})`).forEach(item => {
+        item.classList.remove('active');
       });
     }
-
-    /**
-     * Add Event listener to each of the options of each of the select
-     * this can cause page lagging when each of the select has
-     * close to hundreds of options rather it will be better to use
-     * event delegate to option under their select parent that
-     * =========================================================
-     *     Best Practice because of optimization
-     * =========================================================
-     * if(
-     *      customSelect.classList.contains('select-item') // check if the clicked item has select-item class and
-     *     && customSelect.closest('.wrapper') !== null    // check if clicked item has ancestor with wrapper class
-     * ){ // the conditions are true process this block of code
-     *     this.eventListenerHandler(e as Event, selectID);
-     * }
-     * ==========================================================
-     *     Not recommended for production application
-     * ==========================================================
-     * items.forEach(item => {
-     *     (item.addEventListener as SCAddEventListener)('click', this.eventListenerHandler(event as Event, selectID));
-     * });
-     */
   }
   /**
    * @name eventListenerHandler
