@@ -34,15 +34,6 @@ export default class PickOption {
        * Check if select-menu and select-item are closest
        * to the event target else closes all drop down
        */
-      // if (
-      //   (e.target as HTMLElement).closest(`.select-menu`) === null &&
-      //   (e.target as HTMLElement).closest(`.select-item`) === null
-      // ) {
-      //   // Hide the menus.
-      //   document.querySelectorAll('.select-menu.active').forEach(item => {
-      //     item.classList.remove('active');
-      //   });
-      // }
       this.eventOnDocumentElmOnly(e);
     });
     // Use for...of loop to run through each of the element
@@ -102,49 +93,19 @@ export default class PickOption {
     value: string = '',
     onload = false,
   ): Promise<void> {
-    // Generate the custom options using Promise
-    // const promise = new Promise((resolve, reject) => {
-    //   let optionsList = '';
-    //   let numberOfLength: number;
-    //   const currentSelectValue: string | string[] = this.getSelectedOptions(menu);
-
-    //   const newOptions = options.filter((option: HTMLOptionElement) =>
-    //     this.getFilterConditions(currentSelectValue, option, value),
-    //   );
-
-    //   numberOfLength = newOptions.length - 1;
-    //   if (newOptions.length > 0) {
-    //     newOptions.forEach((option, index) => {
-    //       optionsList += this.generateCustomMenuItems(option);
-    //       if (numberOfLength === index) {
-    //         resolve(optionsList);
-    //       }
-    //     });
-    //   } else {
-    //     resolve(optionsList);
-    //   }
-    // });
-
     const customMenuOptions = await this.prepareOptions(menu, options, value);
     const currentCustomSelect = (document as Document).querySelector(`div#${selectID} .select-item-options .wrapper`);
     if (currentCustomSelect) {
       (currentCustomSelect.parentNode as HTMLElement).removeChild(currentCustomSelect);
     }
-
     if (onload) {
       this.intanceCallMenthod(menu, selectID, customMenuOptions);
     } else {
-      const selectItemOptions = (document as Document).querySelector(
-        `div#${selectID} .select-item-options`,
-      ) as HTMLElement;
+      const selectItemOptions = (document as Document).querySelector(`div#${selectID} .select-item-options`) as HTMLElement;
       selectItemOptions.insertAdjacentHTML(
-        'beforeend',
-        `
-            <div class="wrapper">${customMenuOptions}</div>
-        `,
+        'beforeend',`<div class="wrapper">${customMenuOptions}</div>`,
       );
     }
-
     this.addScrollbar(selectID, onload);
     if (onload) {
       this.addSearchableEvent(selectID);
