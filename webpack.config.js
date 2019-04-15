@@ -24,6 +24,9 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: filepath
     },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js"]
+    },
     module: {
         rules: [
             {

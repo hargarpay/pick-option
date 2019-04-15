@@ -9,57 +9,16 @@ export default class PickOption {
      * @description grt all select elements that have pick-option as class and generate their custom dropdown
      */
     createCustomMenu(): void;
-    testGenerateCustomMenuItems(option: HTMLOptionElement): string;
     private callCreatemenu;
     private getIds;
-    private eventOnDocumentElmOnly;
-    private generateID;
     private generateCustomMenu;
     private prepareOptions;
     private intanceCallMenthod;
     private getSelectOption;
-    private getPlaceholder;
-    private getInnerPlaceholder;
     private getElsePlaceholder;
-    private getOptionString;
     private setParentWidthIfActive;
     private setParentWidth;
     private getMenuItems;
-    private generateCustomMenuItems;
-    /**
-     * @name checkMultipleAttr
-     * @param menu
-     * @description
-     * Check if the select element has multiple attribute or not
-     * if it has return `true`
-     * else return `false`
-     */
-    private checkMultipleAttr;
-    /**
-     * @name getSelectedOptions
-     * @param menu
-     * @description
-     * Considering selected options of both select with multiple attribute and the select without
-     * if select has mulitple attribute then the selected option will be array of the value i.e `string[]`
-     * else if the selected ooption is empty return `[]`
-     * if the select does not have multiple attribute the value will be a `string`
-     */
-    private getSelectedOptions;
-    private getIfSelectedOptions;
-    private getElseSelectedOption;
-    /**
-     * @name getFilterConditions
-     * @param selectedOptions
-     * @param option
-     * @param value
-     * @description
-     * Since two different data types `string|string[]` was consider for the selected option
-     * conditional statement was use. if the `selectedOptions` is a string, check each of the options' value
-     * is not equal to selectedOptions
-     * else if it is array of string `string[]` or empty array [] then check if each of the options' value is not
-     * included
-     */
-    private getFilterConditions;
     /**
      * @name addScrollbar
      * @param selectID
@@ -87,13 +46,11 @@ export default class PickOption {
      * private eventListenerHandler = (e: Event, selectID: string) => (event: Event): void => {
      */
     private eventListenerHandler;
-    private getCurrentSelect;
     /**
      * @name addSearchableEvent
      * @param selectID
      */
     private addSearchableEvent;
-    private getCurrentSelectElement;
     private rerenderMenuList;
 }
 interface IConfig {

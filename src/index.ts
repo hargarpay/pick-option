@@ -1,3 +1,5 @@
+import * as utility  from "./helpers/pickoption";
+
 export default class PickOption {
   private placeholder = 'Select';
   private parentWidthActive = false;
@@ -22,11 +24,6 @@ export default class PickOption {
     }
   }
 
-  // Test function for menu list generator
-  public testGenerateCustomMenuItems(option: HTMLOptionElement): string {
-    return this.generateCustomMenuItems(option);
-  }
-
   private callCreatemenu(selectMenuDisplay: HTMLSelectElement[]){
     // Close all custom dropdown when click outside;
     (document as Document).addEventListener('click', e => {
@@ -34,7 +31,7 @@ export default class PickOption {
        * Check if select-menu and select-item are closest
        * to the event target else closes all drop down
        */
-      this.eventOnDocumentElmOnly(e);
+      utility.eventOnDocumentElmOnly(e);
     });
     // Use for...of loop to run through each of the element
     for (const menu of selectMenuDisplay) {
@@ -62,27 +59,11 @@ export default class PickOption {
   private getIds(id: string): string{
     let selectID: string = id;
     if (this.arraySelectIDs.indexOf(selectID) === -1) {
-      selectID = selectID === "" ? this.generateID() : selectID;
+      selectID = selectID === "" ? utility.generateID() : selectID;
     } else {
-      selectID = this.generateID()
+      selectID = utility.generateID()
     }
     return selectID;
-  }
-
-  private eventOnDocumentElmOnly(e: Event){
-    if (
-      (e.target as HTMLElement).closest(`.select-menu`) === null &&
-      (e.target as HTMLElement).closest(`.select-item`) === null
-    ) {
-      // Hide the menus.
-      document.querySelectorAll('.select-menu.active').forEach(item => {
-        item.classList.remove('active');
-      });
-    }
-  }
-
-  private generateID(): string{
-    return `a${Math.random().toString(36).substring(7)}`;
   }
 
   // Create the custom menu and display it
@@ -116,11 +97,10 @@ export default class PickOption {
     return new Promise((resolve, reject) => {
       let optionsList = '';
       // let numberOfLength: number;
-      const currentSelectValue: string | string[] = this.getSelectedOptions(menu);
+      const currentSelectValue: string | string[] = utility.getSelectedOptions(menu);
 
       const newOptions = options.filter((option: HTMLOptionElement) =>
-        this.getFilterConditions(currentSelectValue, option, value),
-      );
+        utility.getFilterConditions(currentSelectValue, option, value));
 
       if (newOptions.length > 0) {
         optionsList = this.getMenuItems(newOptions);
@@ -136,7 +116,7 @@ export default class PickOption {
       const selectedOption = this.getSelectOption(menu);
       let placeholder: string;
       if (selectedOption !== null) {
-        placeholder = this.getPlaceholder(menu, selectedOption, selectPlaceholder);
+        placeholder = utility.getPlaceholder(menu, selectedOption, selectPlaceholder, this.placeholder);
       } else {
         placeholder = this.getElsePlaceholder(selectPlaceholder);
         menu.value = '';
@@ -144,7 +124,7 @@ export default class PickOption {
       /**
        * if the select element has multiple attribute add multiple class else do not add multiple class
        */
-      const mulitpleClass = this.checkMultipleAttr(menu) ? ' multiple' : '';
+      const mulitpleClass = utility.checkMultipleAttr(menu) ? ' multiple' : '';
       menu.insertAdjacentHTML('beforebegin',`<div class="select-menu${mulitpleClass}" id="${selectID}">
                         <div class="select-item no-select">${placeholder}</div>
                         <div class="select-item-options">
@@ -160,48 +140,13 @@ export default class PickOption {
   }
 
   private getSelectOption(menu: HTMLSelectElement): HTMLOptionElement | HTMLOptionElement[] | null {
-    return this.checkMultipleAttr(menu)
+    return utility.checkMultipleAttr(menu)
     ? (Array.from(menu.querySelectorAll('option[selected]')) as HTMLOptionElement[] | null)
     : (menu.querySelector('option[selected]') as HTMLOptionElement | null);
   }
 
-  private getPlaceholder(menu: HTMLSelectElement, selectedOption: HTMLOptionElement|HTMLOptionElement[], selectPlaceholder: string|null)
-  :string
-  {
-    let placeholder: string;
-    if (Array.isArray(selectedOption)) {
-      placeholder = this.getInnerPlaceholder(menu, selectedOption, selectPlaceholder);
-    } else {
-      placeholder = selectedOption.textContent as string;
-    }
-    return placeholder;
-  }
-
-  private getInnerPlaceholder(menu: HTMLSelectElement, selectedOption: HTMLOptionElement[], selectPlaceholder: string|null)
-  :string
-  {
-    let placeholder: string;
-    if (selectedOption.length > 0) {
-      placeholder = this.getOptionString(selectedOption);
-    } else {
-      placeholder = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
-      menu.value = '';
-    }
-    return placeholder;
-  }
-
   private getElsePlaceholder(selectPlaceholder: string | null): string{
     return selectPlaceholder === null ? this.placeholder : selectPlaceholder;
-  }
-
-  private getOptionString(selectedOption: HTMLOptionElement[]): string{
-    let optionString = '';
-    selectedOption.forEach(option => {
-      optionString += `<span class="selected" data-label="${option.textContent}">${
-        option.textContent
-      } <span class="close">x</span></span>`;
-    });
-     return optionString;
   }
 
   private setParentWidthIfActive(menu: HTMLSelectElement){
@@ -223,90 +168,12 @@ export default class PickOption {
     }
   }
 
-
-
   private getMenuItems(newOptions: HTMLOptionElement[]): string{
     let optionsList = '';
     newOptions.forEach((option) => {
-      optionsList += this.generateCustomMenuItems(option);
+      optionsList += utility.generateCustomMenuItems(option);
     });
     return optionsList;
-  }
-
-  private generateCustomMenuItems(option: HTMLOptionElement): string {
-    const value = option.value;
-    const label = option.textContent as string;
-    return `
-        <div class="select-item" data-value="${value}">${label}</div>
-    `;
-  }
-
-  /**
-   * @name checkMultipleAttr
-   * @param menu
-   * @description
-   * Check if the select element has multiple attribute or not
-   * if it has return `true`
-   * else return `false`
-   */
-  private checkMultipleAttr(menu: HTMLSelectElement): boolean {
-    return menu.getAttribute('multiple') !== null;
-  }
-
-  /**
-   * @name getSelectedOptions
-   * @param menu
-   * @description
-   * Considering selected options of both select with multiple attribute and the select without
-   * if select has mulitple attribute then the selected option will be array of the value i.e `string[]`
-   * else if the selected ooption is empty return `[]`
-   * if the select does not have multiple attribute the value will be a `string`
-   */
-  private getSelectedOptions(menu: HTMLSelectElement): string | string[] {
-    let currentSelectValue: string | string[];
-    if (this.checkMultipleAttr(menu)) {
-      const selectedOptions = Array.from(menu.querySelectorAll('option[selected]')) as HTMLOptionElement[];
-      currentSelectValue = this.getIfSelectedOptions(selectedOptions);
-    } else {
-      const selectedOption = menu.querySelector('option[selected]') as HTMLOptionElement | null;
-      currentSelectValue = this.getElseSelectedOption(selectedOption);
-    }
-    return currentSelectValue;
-  }
-
-  private getIfSelectedOptions(selectedOptions: HTMLOptionElement[]): string[]{
-    return  selectedOptions.length > 0 ? selectedOptions.map(opt => opt.value) as string[] : [];
-  }
-
-  private getElseSelectedOption(selectedOption: HTMLOptionElement | null): string{
-    return selectedOption !== null ? selectedOption.value as string: '';
-  }
-
-  /**
-   * @name getFilterConditions
-   * @param selectedOptions
-   * @param option
-   * @param value
-   * @description
-   * Since two different data types `string|string[]` was consider for the selected option
-   * conditional statement was use. if the `selectedOptions` is a string, check each of the options' value
-   * is not equal to selectedOptions
-   * else if it is array of string `string[]` or empty array [] then check if each of the options' value is not
-   * included
-   */
-  private getFilterConditions(selectedOptions: string | string[], option: HTMLOptionElement, value: string): boolean {
-    let removeSelectedOptions: boolean;
-    const filterBySearch =
-      option.value.toLowerCase().indexOf((value as string).toLowerCase()) > -1 ||
-      (option.textContent as string).toLowerCase().indexOf((value as string).toLowerCase()) > -1;
-
-    if ((typeof selectedOptions).toLowerCase() === 'string') {
-      removeSelectedOptions = (option.value as string).trim() !== (selectedOptions as string).trim();
-    } else {
-      removeSelectedOptions = (selectedOptions as [string]).indexOf(option.value) === -1;
-    }
-
-    return filterBySearch && removeSelectedOptions;
   }
 
   /**
@@ -439,7 +306,7 @@ export default class PickOption {
 
   private eventListenerHandler = (evt: Event, selectID: string) => {
     const elemTarget = evt.target as HTMLElement;
-    const customSelect = this.getCurrentSelect(elemTarget);
+    const customSelect = utility.getCurrentSelect(elemTarget);
     const selectElement = customSelect.nextElementSibling as HTMLSelectElement;
     (Array.from(selectElement.querySelectorAll('option')) as HTMLOptionElement[]).forEach((option, index) => {
       if (elemTarget.getAttribute('data-value') === option.value) {
@@ -450,15 +317,15 @@ export default class PickOption {
           selectElement.dispatchEvent(dispatch);
         }
       } else {
-        if (!this.checkMultipleAttr(selectElement)) {
+        if (!utility.checkMultipleAttr(selectElement)) {
           option.removeAttribute('selected');
         }
       }
     });
-    if (this.checkMultipleAttr(selectElement)) {
+    if (utility.checkMultipleAttr(selectElement)) {
       const selctedOptions = Array.from(selectElement.querySelectorAll('option[selected]')) as HTMLOptionElement[];
       if (selctedOptions.length > 0) {
-        customSelect.children[0].innerHTML = this.getOptionString(selctedOptions);
+        customSelect.children[0].innerHTML = utility.getOptionString(selctedOptions);
       }
     } else {
       customSelect.children[0].textContent = elemTarget.textContent;
@@ -468,13 +335,6 @@ export default class PickOption {
     ) as HTMLInputElement;
     this.rerenderMenuList(selectID, (searchInput.value as string).trim());
   };
-
-  private getCurrentSelect(targetElem: HTMLElement): HTMLElement {
-    const wrapper = targetElem.parentNode as HTMLElement;
-    const customSelect = (wrapper.parentNode as HTMLElement).parentNode as HTMLElement;
-
-    return customSelect;
-  }
 
   /**
    * @name addSearchableEvent
@@ -490,14 +350,8 @@ export default class PickOption {
     });
   }
 
-  private getCurrentSelectElement(selectID: string): HTMLSelectElement {
-    const currentCustomSelect = (document as Document).querySelector(`div#${selectID}`) as HTMLElement;
-    const selectOptions = currentCustomSelect.nextElementSibling as HTMLSelectElement;
-    return selectOptions;
-  }
-
   private rerenderMenuList(selectID: string, searchValue = '') {
-    const selectOptions = this.getCurrentSelectElement(selectID);
+    const selectOptions = utility.getCurrentSelectElement(selectID);
     const menuOptions = Array.from(selectOptions.querySelectorAll('option')) as HTMLOptionElement[];
     this.generateCustomMenu(selectOptions, menuOptions, selectID, searchValue);
   }
