@@ -12,7 +12,7 @@
     "lint": "tslint -p tsconfig.json",
     "webpack": "webpack --config webpack.config.js",
     "prepare": "npm run webpack",
-    "prepublishOnly": "npm test && npm run lint",
+    "prepublishOnly": "npm run local && npm run lint",
     "preversion": "npm run lint",
     "version": "git add -A src",
     "postversion": "git push && git push --tags"
