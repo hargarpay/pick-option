@@ -122,14 +122,7 @@ export default class PickOption {
         this.getFilterConditions(currentSelectValue, option, value),
       );
 
-      // numberOfLength = newOptions.length - 1;
       if (newOptions.length > 0) {
-        // newOptions.forEach((option, index) => {
-        //   optionsList += this.generateCustomMenuItems(option);
-        //   if (numberOfLength === index) {
-        //     resolve(optionsList);
-        //   }
-        // });
         optionsList = this.getMenuItems(newOptions);
         return resolve(optionsList)
       }
