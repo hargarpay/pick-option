@@ -1,4 +1,4 @@
-## PickOption ![Travis (.com) branch](https://img.shields.io/travis/com/hargarpay/pick-option/master.svg)
+## PickOption ![Travis (.com) branch](https://img.shields.io/travis/com/hargarpay/pick-option/master.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/9c4d656c493a28fc3aec/maintainability)](https://codeclimate.com/github/hargarpay/pick-option/maintainability)
 PickOption is a vanilla (pure) javascript module that use to convert select element to a style seachable select element. It does not depend on javascript. It is use for country selectors, contact lists and so on.
 
 ### Features
