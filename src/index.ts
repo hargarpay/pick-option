@@ -197,12 +197,6 @@ export default class PickOption {
   {
     let placeholder: string;
     if (selectedOption.length > 0) {
-      // let optionString = '';
-      // selectedOption.forEach(option => {
-      //   optionString += `<span class="selected" data-label="${option.textContent}">${
-      //     option.textContent
-      //   } <span class="close">x</span></span>`;
-      // });
       placeholder = this.getOptionString(selectedOption);
     } else {
       placeholder = selectPlaceholder === null ? this.placeholder : selectPlaceholder;
@@ -479,13 +473,7 @@ export default class PickOption {
     if (this.checkMultipleAttr(selectElement)) {
       const selctedOptions = Array.from(selectElement.querySelectorAll('option[selected]')) as HTMLOptionElement[];
       if (selctedOptions.length > 0) {
-        let selectedOption = '';
-        selctedOptions.forEach(option => {
-          selectedOption += `<span class="selected" data-label="${option.textContent}">${
-            option.textContent
-          } <span class="close">x</span></span>`;
-        });
-        customSelect.children[0].innerHTML = selectedOption;
+        customSelect.children[0].innerHTML = this.getOptionString(selctedOptions);
       }
     } else {
       customSelect.children[0].textContent = elemTarget.textContent;
